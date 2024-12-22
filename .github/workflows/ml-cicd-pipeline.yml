@@ -1,69 +1,34 @@
 name: CI/CD Pipeline for ML Model
 
-# Trigger the pipeline on push to the main branch or when creating a PR
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
-  # Job for training the model
-  train_model:
+  run:
     runs-on: ubuntu-latest
     steps:
-      # Check out the code
-      - name: Checkout Code
-        uses: actions/checkout@v2
+      # Step 1: Checkout the code
+      - uses: actions/checkout@v3
 
-      # Set up Python environment
+      # Step 2: Download Iris dataset (if not in the repo)
+      - name: Download Iris Dataset from UCI
+        run: |
+          curl -o iris.csv https://raw.githubusercontent.com/kodigitaccount/cicd_iris/refs/heads/main/iris.csv
+
+      # Step 3: Set up Python environment
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.8'
 
-      # Install dependencies
+      # Step 4: Install dependencies
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Train the model (run the train.py script)
+      # Step 5: Train the model
       - name: Train Model
         run: |
-          python mlcode.py 
-
-      # Save the model file (example of saving it to the GitHub workspace)
-      - name: Save Model
-        run: |
-          cp models/model.pkl $GITHUB_WORKSPACE/models/model.pkl
-
-  # Job for testing the model (can include unit tests or model validation)
-  test_model:
-    runs-on: ubuntu-latest
-    needs: train_model
-    steps:
-      # Check out the code
-      - name: Checkout Code
-        uses: actions/checkout@v2
-
-      # Set up Python environment
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.8'
-
-      # Install dependencies
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      # Test the model (e.g., load the model and validate predictions)
-      - name: Test Model
-        run: |
-          python mlcode.py  # Assuming you have a test.py script for model validation
-
-  
+          python train_model.py
