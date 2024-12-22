@@ -33,7 +33,7 @@ jobs:
       # Train the model (run the train.py script)
       - name: Train Model
         run: |
-          python mlcode.py
+          python mlcode.py 
 
       # Save the model file (example of saving it to the GitHub workspace)
       - name: Save Model
